@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link rel="stylesheet" href="LoginMCD.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem de Manutenção</title>
+</head>
+<body>
+    <div class="main-login">
+        <div class="left-login">
+            <span class="titulo" style="color: aqua;">Juntos Somos  <span class="typing-text"></span></span>
+            <img src="Projetos/images/Maroni-removebg-preview.png" class="imagemMaroni" alt="Logo">
+            <img src="Projetos/images/Marlog.png" class="Marlog" alt="Logo">
+            <img src="Projetos/images/MAXX_3-removebg-preview.png" class="max" alt="Logo">
+            <img src="Projetos/images/TKS.png" class="tks" alt="Logo">
+            <img src="Projetos/images/Maroni Eco.png" class="eco" alt="Logo">
+        </div>
+        <div class="right-login">
+            <div class="card-login">
+                <h2>Preencha com Seu Login</h2>
+                <div class="text-field">
+                    <label for="usuario">Usuário</label>
+                    <input type="text" id="username" name="username" placeholder="Usuário">
+                </div>
+                <div class="text-field">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="password" name="password" placeholder="Senha">
+                </div>
+                <button class="botão" id="loginButton">Entrar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typingTextElement = document.querySelector('.typing-text');
+            const phrases = ["Mais!", "Grupo Maroni", "a Evolução do Transporte!"];
+            let phraseIndex = 0;
+            let letterIndex = 0;
+            let currentPhrase = phrases[phraseIndex];
+            let isDeleting = false;
+            const typingSpeed = 70;  // Velocidade de digitação
+            const deletingSpeed = 80; // Velocidade de apagamento
+            const pauseDuration = 2000; // Tempo de pausa entre as frases
+
+            function type() {
+                if (isDeleting) {
+                    if (letterIndex > 0) {
+                        letterIndex--;
+                        typingTextElement.textContent = currentPhrase.substring(0, letterIndex);
+                        setTimeout(type, deletingSpeed);
+                    } else {
+                        isDeleting = false;
+                        phraseIndex = (phraseIndex + 1) % phrases.length; // Próxima frase
+                        currentPhrase = phrases[phraseIndex];
+                        setTimeout(type, typingSpeed);
+                    }
+                } else {
+                    if (letterIndex < currentPhrase.length) {
+                        letterIndex++;
+                        typingTextElement.textContent = currentPhrase.substring(0, letterIndex);
+                        setTimeout(type, typingSpeed);
+                    } else {
+                        isDeleting = true;
+                        setTimeout(type, pauseDuration);
+                    }
+                }
+            }
+
+            type();
+        });
+
+        // Adicione o evento de clique ao botão de login
+        document.getElementById('loginButton').addEventListener('click', async function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Armazene o token no localStorage ou em um cookie
+                    localStorage.setItem('token', data.token);
+                    alert('Login bem-sucedido');
+                    // Redirecione ou atualize a interface do usuário conforme necessário
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Erro ao enviar dados:', error);
+            }
+        });
+    </script>
+
+</body>
+</html>
